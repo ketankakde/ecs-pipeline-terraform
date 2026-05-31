@@ -1,26 +1,18 @@
+# Use alpine node base image
 FROM node:20-alpine
 
-# Update OS packages
-RUN apk update && apk upgrade
-
-# Create non-root user (security best practice)
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
+# Set working directory inside the container
 WORKDIR /app
 
+# Copy package files and install dependencies
 COPY package*.json ./
+RUN npm install
 
-# Install only production dependencies
-RUN npm install --omit=dev
-
+# Copy the rest of the application code
 COPY . .
 
-# Change ownership
-RUN chown -R appuser:appgroup /app
-
-# Run as non-root
-USER appuser
-
+# Expose the application port
 EXPOSE 5000
 
-CMD ["npm", "start"]
+# Command to run node.js in a docker container
+CMD ["node", "app.js"]
