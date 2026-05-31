@@ -24,11 +24,11 @@ jobs:
 
     - name: Build Backend
       run: |
-        docker build -t backend: ./backend
+        docker build -t backend-app ./backend
 
     - name: Build Frontend
       run: |
-        docker build -t frontend: ./frontend    
+        docker build -t frontend-app ./frontend    
 
     - name: Tag Backend
       run: |
