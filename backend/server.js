@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // MySQL Connection Pool
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || 'mysql',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'password',
+  password: process.env.DB_PASSWORD || 'password123',
   database: process.env.DB_NAME || 'student_registration',
   waitForConnections: true,
   connectionLimit: 10,
