@@ -33,22 +33,22 @@ jobs:
     - name: Tag Backend
       run: |
         sudo docker tag backend-app:latest \
-        ${{ steps.login-ecr.outputs.registry }}/backend-app:latest
+        ${{ steps.login-ecr.outputs.registry }}/backend-app
 
     - name: Tag Frontend
       run: |
         sudo docker tag frontend-app:latest \
-        ${{ steps.login-ecr.outputs.registry }}/frontend-app:latest
+        ${{ steps.login-ecr.outputs.registry }}/frontend-app
     
     - name: Push Backend
       run: |
         sudo docker push \
-        ${{ steps.login-ecr.outputs.registry }}/backend-app:latest
+        ${{ steps.login-ecr.outputs.registry }}/backend-app
     
     - name: Push Frontend
       run: |
         sudo docker push \
-        ${{ steps.login-ecr.outputs.registry }}/frontend-app:latest
+        ${{ steps.login-ecr.outputs.registry }}/frontend-app
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v1.0.3
