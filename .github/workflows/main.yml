@@ -1,0 +1,77 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build Backend
+      run: |
+        docker build -t backend: ./backend
+
+    - name: Build Frontend
+      run: |
+        docker build -t frontend: ./frontend    
+
+    - name: Tag Backend
+      run: |
+        docker tag backend-app:latest \
+        ${{ steps.login-ecr.outputs.registry }}/backend-app:latest
+
+    - name: Tag Frontend
+      run: |
+        docker tag frontend-app:latest \
+        ${{ steps.login-ecr.outputs.registry }}/frontend-app:latest
+    
+    - name: Push Backend
+      run: |
+        docker push \
+        ${{ steps.login-ecr.outputs.registry }}/backend-app:latest
+    
+    - name: Push Frontend
+      run: |
+        docker push \
+        ${{ steps.login-ecr.outputs.registry }}/frontend-app:latest
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          aws ecr get-login-password --region us-east-1 | \
+          docker login --username AWS --password-stdin \
+          ${{ steps.login-ecr.outputs.registry }}
+
+          docker pull \
+          ${{ steps.login-ecr.outputs.registry }}/backend-app:latest
+
+          docker pull \
+          ${{ steps.login-ecr.outputs.registry }}/frontend-app:latest
+
+          docker network create mynet || true
+
+          docker run -d -p 5000:5000 --name backend --network mynet backend-app:latest
+
+          docker run -d -p 80:80 --name frontend --network mynet frontend-repo:latest
