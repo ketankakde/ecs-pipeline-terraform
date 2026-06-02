@@ -67,7 +67,11 @@ jobs:
           docker pull \
           ${{ steps.login-ecr.outputs.registry }}/frontend-app:latest
           
-          sudo docker network create mynet || true
+          sudo docker network rm mynet || true
+
+          docker rm -f backend frontend mysql || true
+
+          sudo docker network create mynet
           
           sudo docker run -d --name mysql --network mynet -e MYSQL_ROOT_PASSWORD=rootpass -e MYSQL_USER=appuser -e MYSQL_DATABASE=student_registration -e MYSQL_PASSWORD=password123 mysql:8.0
           
