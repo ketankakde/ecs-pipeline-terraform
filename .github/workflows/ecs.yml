@@ -58,21 +58,19 @@ jobs:
 
       - name: Terraform Init
         working-directory: terraform
-        run: | 
-          terraform init
-          terraform destroy -auto-approve
+        run: terraform init
 
       - name: Terraform Validate
         working-directory: terraform
         run: terraform validate
 
-      - name: Terraform Apply
+      - name: Terraform Destroy
         working-directory: terraform
-        run: |
-          terraform apply -auto-approve
-      - name: Force ECS Deployment
+        run: terraform destroy -auto-approve
+
+      - name: ECS Deployment
         run: |
          aws ecs update-service \
           --cluster ${{ env.CLUSTER }} \
           --service ${{ env.SERVICE }} \
-          --force-new-deployment
+          --force-new-deployment  
