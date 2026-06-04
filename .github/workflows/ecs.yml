@@ -9,6 +9,8 @@ permissions:
 env:
   FRONTEND_REPO: frontend-app
   BACKEND_REPO: backend-app
+  CLUSTER: 3T-ECS
+  SERVICE: 3T-ECS-Service
 
 jobs:
   deploy:
@@ -65,3 +67,10 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform
         run: terraform apply -auto-approve
+        
+      - name: Force ECS Deployment
+        run: |
+         aws ecs update-service \
+         --cluster ${{ env.CLUSTER }} \
+         --service ${{ env.SERVICE }} \
+         --force-new-deployment
