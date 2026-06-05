@@ -66,7 +66,8 @@ jobs:
 
       - name: Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve
+        run: terraform apply -target=module.ecs \
+             -auto-approve
         
       - name: ECS Deployment
         run: |
