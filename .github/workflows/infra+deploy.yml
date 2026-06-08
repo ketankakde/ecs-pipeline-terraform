@@ -108,8 +108,8 @@ jobs:
           script: |
 
             echo "Logging into ECR..."
-            sudo aws ecr get-login-password --region us-east-1 | \
-            docker login --username AWS --password-stdin 160900807677.dkr.ecr.us-east-1.amazonaws.com
+            aws ecr get-login-password --region us-east-1 | \
+            sudo docker login --username AWS --password-stdin 160900807677.dkr.ecr.us-east-1.amazonaws.com
 
             echo "Pulling latest images..."
             sudo docker pull 160900807677.dkr.ecr.us-east-1.amazonaws.com/backend:latest
