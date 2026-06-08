@@ -20,7 +20,7 @@ variable "allocated_storage" {
 }
 
 variable "db_name" {
- default = "student_registration
+ default = "student_registration"
 }
 
 variable "username" {
