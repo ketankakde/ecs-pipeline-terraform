@@ -24,4 +24,5 @@ module "rds" {
   vpc_id            = module.vpc.vpc_id
   private_subnet_id = module.vpc.private_subnet_id
   private_2_id = module.vpc.private_2_id
+  ec2_sg_id         = module.ec2.ec2_sg_id
 }
