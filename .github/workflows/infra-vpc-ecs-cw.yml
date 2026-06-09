@@ -11,6 +11,10 @@ on:
           - create
           - destroy
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -18,28 +22,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::160900807677:role/role-for-github-actions
           aws-region: us-east-1
 
       - uses: hashicorp/setup-terraform@v3
 
-      - run: terraform init
+      - name: Terraform Init
+        run: terraform init
         working-directory: terraform
 
       - name: Create Infra
         if: github.event.inputs.action == 'create'
-        run: | 
+        working-directory: terraform
+        run: |
           terraform apply \
           -target=module.vpc \
           -target=module.sg \
           -target=module.cw \
           -auto-approve
-        working-directory: terraform
 
       - name: Destroy Infra
         if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve
         working-directory: terraform
+        run: terraform destroy -auto-approve
